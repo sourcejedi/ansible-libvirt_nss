@@ -1,0 +1,28 @@
+- name: Install python3
+  package:
+    name: python3
+    state: present
+
+- block:
+    - name: Install libvirt-nss
+      package:
+        name: libvirt-nss
+        state: present
+  rescue:
+    - name: Install libnss-libvirt (Debian package name)
+      package:
+        name: libnss-libvirt
+        state: present
+
+- name: Create nsswitch script
+  copy:
+    src: nsswitch.py
+    dest: /ansible/libvirt_nss/
+
+    # Ansible copy module does not preserve executable bit, unlike `cp`.
+    mode: a+x
+
+- name: Add libvirt-nss to nsswitch.conf
+  command: /ansible/libvirt_nss/nsswitch.py
+  register: libvirt_nss_script
+  changed_when: libvirt_nss_script.stdout != ""

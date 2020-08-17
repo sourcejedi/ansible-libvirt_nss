@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Alan Jenkins
+  description: Install and enable libvirt-nss, to resolve the hostnames of your virtual machines.
+
+  license: GPLv3
+
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
