@@ -14,15 +14,7 @@
         name: libnss-libvirt
         state: present
 
-- name: Create nsswitch script
-  copy:
-    src: nsswitch.py
-    dest: /ansible/libvirt_nss/
-
-    # Ansible copy module does not preserve executable bit, unlike `cp`.
-    mode: a+x
-
 - name: Add libvirt-nss to nsswitch.conf
-  command: /ansible/libvirt_nss/nsswitch.py
+  script: nsswitch.py
   register: libvirt_nss_script
-  changed_when: libvirt_nss_script.stdout != ""
+  changed_when: libvirt_nss_script.stdout|trim != ""
