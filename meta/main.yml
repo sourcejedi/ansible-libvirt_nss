@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: libvirt_nss
   author: Alan Jenkins
   description: Install and enable libvirt-nss, to resolve the hostnames of your virtual machines.
 
