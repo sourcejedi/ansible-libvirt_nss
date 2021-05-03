@@ -23,9 +23,10 @@ def change_line(line):
     if re.search(rb"[ \t]" + SERVICE + rb"([ \t]|$)", before_dns):
         return line  # already done
 
-    # In case someone put SERVICE after dns, remove it
-    line = re.sub(rb"[ \t]" + SERVICE + rb"([ \t]|$)", 
-                  lambda m: m.group(1),
+    # In case someone put SERVICE after dns, remove it.
+    # Custom actions for SERVICE are removed.
+    line = re.sub(rb"[ \t]" + SERVICE + rb"([ \t]*\[[^]]*\])*" + rb"([ \t]|$)",
+                  lambda m: m.group(2),
                   line)
 
     return re.sub(rb"[ \t](dns|resolve)([ \t]|$)", 
@@ -44,6 +45,8 @@ class Test(unittest.TestCase):
                          b"hosts: libvirt dns")
         self.assertEqual(change_line(b"hosts: dns libvirt"),
                          b"hosts: libvirt dns")
+        self.assertEqual(change_line(b"hosts: dns libvirt [SUCCESS=return] [NOTFOUND=return]"),
+                         b"hosts: libvirt dns")
 
         self.assertEqual(change_line(b"hosts: files dns"),
                          b"hosts: files libvirt dns")
@@ -55,6 +58,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(change_line(b"hosts: mymachines resolve [!UNAVAIL=return] myhostname files dns"),
                          b"hosts: mymachines libvirt resolve [!UNAVAIL=return] myhostname files dns")
+
 
 if __name__ == '__main__':
     file_old = open(NAME, "rb")
