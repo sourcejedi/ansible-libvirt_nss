@@ -14,7 +14,20 @@
         name: libnss-libvirt
         state: present
 
-- name: Add libvirt-nss to nsswitch.conf
-  script: nsswitch.py
-  register: libvirt_nss_script
-  changed_when: libvirt_nss_script.stdout|trim != ""
+- name: Create role directory
+  file:
+    path: /var/cache/ansible-role/libvirt_nss
+    state: directory
+
+- name: Generate modified nsswitch.conf
+  script: "nsswitch.py /etc/nsswitch.conf
+                       /var/cache/ansible-role/libvirt_nss/nsswitch.conf"
+  changed_when: False
+  check_mode: no
+
+- name: Install modified nsswitch.conf
+  copy:
+    remote_src: yes
+    src: /var/cache/ansible-role/libvirt_nss/nsswitch.conf
+    dest: /etc/nsswitch.conf
+    mode: "644"

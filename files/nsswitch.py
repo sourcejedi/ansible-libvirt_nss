@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 import unittest
+import sys
 import os
 import re
-
-NAME = "/etc/nsswitch.conf"
-NAME_TMP = NAME + ".tmp"
 
 # Work in bytes, because all significant characters are ASCII.
 DATABASE = b"hosts:"
@@ -61,21 +59,11 @@ class Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    file_old = open(NAME, "rb")
-    file_tmp = open(NAME_TMP, "wb")
-    os.chmod(NAME_TMP, 0o644)  # u+rw,a+r
+    if len(sys.argv) != 3:
+        exit("Wrong number of arguments")
 
-    changed = False
-    for line in file_old:
-        new_line = change_line(line)
-        if new_line != line:
-            changed = True
-        file_tmp.write(new_line)
-
-    file_tmp.close()
-    file_old.close()
-    if changed:
-        os.rename(NAME_TMP, NAME)
-        print("changed\n")
-    else:
-        os.unlink(NAME_TMP)
+    with open(sys.argv[1], "rb") as file_in, \
+            open(sys.argv[2], "wb") as file_out:
+        for line in file_in:
+            new_line = change_line(line)
+            file_out.write(new_line)
