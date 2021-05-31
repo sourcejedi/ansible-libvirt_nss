@@ -57,13 +57,18 @@ class Test(unittest.TestCase):
         self.assertEqual(change_line(b"hosts: mymachines resolve [!UNAVAIL=return] myhostname files dns"),
                          b"hosts: mymachines libvirt resolve [!UNAVAIL=return] myhostname files dns")
 
+def main(args):
+    if len(args) != 2:
+        raise Exception("Wrong number of arguments")
 
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        exit("Wrong number of arguments")
-
-    with open(sys.argv[1], "rb") as file_in, \
-            open(sys.argv[2], "wb") as file_out:
+    with open(args[0], "rb") as file_in, \
+            open(args[1], "wb") as file_out:
         for line in file_in:
             new_line = change_line(line)
             file_out.write(new_line)
+
+if __name__ == '__main__':
+    try:
+        main(sys.argv[1:])
+    except Exception as e:
+        sys.exit(e)
